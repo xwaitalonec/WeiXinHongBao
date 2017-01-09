@@ -4,7 +4,6 @@ import android.accessibilityservice.AccessibilityService;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,10 +13,14 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-import xyz.monkeytong.hongbao.utils.HongbaoSignature;
-import xyz.monkeytong.hongbao.activities.MainActivity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import xyz.monkeytong.hongbao.utils.HongbaoSignature;
 
 
 public class HongbaoService extends AccessibilityService {
@@ -114,7 +117,8 @@ public class HongbaoService extends AccessibilityService {
 
     private boolean watchNotifications(AccessibilityEvent event) {
         // Not a notification
-        if (event.getEventType() != AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) return false;
+        if (event.getEventType() != AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED)
+            return false;
 
         // Not a hongbao
         String tip = event.getText().toString();
@@ -237,5 +241,28 @@ public class HongbaoService extends AccessibilityService {
         for (String flag : flagsList) {
             watchedFlags.put(flag, sharedPreferences.getBoolean(flag, false));
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        startup(this);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        try {
+            Notification notification = new Notification();
+            notification.flags |= Notification.FLAG_NO_CLEAR;
+            notification.flags |= Notification.FLAG_ONGOING_EVENT;
+            startForeground(0, notification);
+        } catch (Throwable e) {
+            // Ignore
+        }
+    }
+
+    public static void startup(Context context) {
+        context.startService(new Intent(context, HongbaoService.class));
     }
 }
