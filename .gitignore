@@ -6,3 +6,13 @@
 /build
 /captures
 /.idea/dictionaries
+/.codeclimate.yml
+/.gitattributes
+/.travis.yml
+/gradle.properties
+/gradlew
+/gradlew.bat
+/WeiXinHongBao.iml
+/.idea
+/app/*.iml
+/.gradle
